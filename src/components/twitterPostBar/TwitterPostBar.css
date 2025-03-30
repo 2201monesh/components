@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+.card-container{
+    height: word-wrap;
+}
