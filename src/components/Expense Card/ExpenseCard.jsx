@@ -1,14 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MdClose } from "react-icons/md";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CiCalendarDate } from "react-icons/ci";
+import { RiArrowLeftDownLine, RiArrowRightUpLine } from "react-icons/ri";
+import { MdOutlineDescription } from "react-icons/md";
+import { FaChevronDown } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion"; // ✨
 
 function ExpenseCard() {
   const [rawValue, setRawValue] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [amountType, setAmountType] = useState(null);
+  const [amountType, setAmountType] = useState("Income");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categories, setCategories] = useState({
+    HOME: ["Rent", "Groceries", "Electricity", "Water Bills", "Maintenance"],
+    LEISURE: ["Coffee", "Travel", "Dining", "Movies", "Games"],
+    OTHERS: ["Health", "Insurance", "Education", "Gifts"],
+  });
 
   const handleChange = (e) => {
     const value = e.target.value.replace(/,/g, "").replace(/₹/g, "").trim();
@@ -25,8 +38,6 @@ function ExpenseCard() {
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setShowCalendar(false);
-    console.log("Amount:", formatIndianNumber(rawValue));
-    console.log("Date:", date?.toISOString().split("T")[0]);
   };
 
   const selectToday = () => {
@@ -36,11 +47,45 @@ function ExpenseCard() {
 
   const handleTypeSelect = (type) => {
     setAmountType(type);
-    console.log("Amount Type:", type);
   };
 
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+  };
+
+  const handleCategorySelect = (cat) => {
+    setCategory(cat);
+    setShowCategoryDropdown(false);
+    setSearchTerm(""); // reset search
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleCustomCategory = (e) => {
+    if (e.key === "Enter" && searchTerm.trim()) {
+      // Add to Others
+      setCategories((prev) => ({
+        ...prev,
+        OTHERS: [...prev.OTHERS, searchTerm.trim()],
+      }));
+      handleCategorySelect(searchTerm.trim());
+    }
+  };
+
+  // Flatten all categories to filter easily
+  const filteredCategories = Object.entries(categories).map(
+    ([section, items]) => {
+      const filteredItems = items.filter((item) =>
+        item.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      return [section, filteredItems];
+    }
+  );
+
   return (
-    <div className="w-96 bg-white rounded px-4 py-2">
+    <div className="w-96 bg-white rounded px-4 py-2 relative">
       {/* Heading */}
       <div className="flex items-center">
         <p className="w-[95%] flex justify-center text-lg font-semibold">
@@ -87,7 +132,7 @@ function ExpenseCard() {
             />
             <div className="text-center mt-2">
               <button
-                className="border border-gray-400 text-gray-500 px-3 py-1 rounded cursor-pointer w-[100%]"
+                className="border border-gray-400 text-gray-500 px-3 py-1 rounded cursor-pointer w-full"
                 onClick={selectToday}
               >
                 Select Today
@@ -100,25 +145,99 @@ function ExpenseCard() {
       {/* Amount Type Toggle */}
       <div className="mt-6 flex justify-between bg-gray-100 rounded-lg p-1">
         <div
-          className={`w-1/2 text-center py-2 cursor-pointer font-medium transition-all ${
+          className={`w-1/2 text-center py-2 cursor-pointer font-medium transition-all flex items-center justify-center ${
             amountType === "Income"
               ? "bg-white text-black rounded-lg shadow-sm mx-1"
               : "text-gray-500"
           }`}
           onClick={() => handleTypeSelect("Income")}
         >
+          <p className="mr-1 text-green-500">
+            <RiArrowLeftDownLine />
+          </p>
           Income
         </div>
         <div
-          className={`w-1/2 text-center py-2 cursor-pointer font-medium transition-all ${
+          className={`w-1/2 text-center py-2 cursor-pointer font-medium transition-all flex items-center justify-center ${
             amountType === "Expense"
               ? "bg-white text-black rounded-lg shadow-sm mx-1"
               : "text-gray-500"
           }`}
           onClick={() => handleTypeSelect("Expense")}
         >
+          <p className="mr-1 text-red-500">
+            <RiArrowRightUpLine />
+          </p>
           Expense
         </div>
+      </div>
+
+      {/* Description Input */}
+      <div className="mt-6 relative">
+        <input
+          type="text"
+          value={description}
+          onChange={handleDescriptionChange}
+          className="w-full bg-gray-100 rounded-lg py-2 pr-10 pl-4 text-gray-700 border-none focus:outline-none"
+          placeholder="Enter description..."
+        />
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+          <MdOutlineDescription size={20} />
+        </div>
+      </div>
+
+      {/* Category Input */}
+      <div className="mt-6 relative">
+        <div
+          className="w-full bg-gray-100 rounded-lg py-2 px-4 text-gray-700 flex justify-between items-center cursor-pointer"
+          onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+        >
+          <span>{category || "Select Category"}</span>
+          <FaChevronDown size={16} className="text-gray-400" />
+        </div>
+
+        {/* Category Dropdown with Animation */}
+        <AnimatePresence>
+          {showCategoryDropdown && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="absolute top-full left-0 mt-2 w-full bg-white rounded-lg shadow-lg p-4 z-20"
+            >
+              {/* Search Input */}
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                onKeyDown={handleCustomCategory}
+                placeholder="Search or add category..."
+                className="w-full mb-4 px-3 py-2 bg-gray-100 rounded focus:outline-none text-sm"
+              />
+
+              {filteredCategories.map(([section, items]) =>
+                items.length > 0 ? (
+                  <div key={section} className="mb-4">
+                    <p className="text-xs font-semibold text-gray-400 mb-2">
+                      {section}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {items.map((item) => (
+                        <div
+                          key={item}
+                          onClick={() => handleCategorySelect(item)}
+                          className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700 cursor-pointer hover:bg-gray-200"
+                        >
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
