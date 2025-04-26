@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { MdClose } from "react-icons/md";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { CiCalendarDate } from "react-icons/ci";
 
 function ExpenseCard() {
   const [rawValue, setRawValue] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const handleChange = (e) => {
     const value = e.target.value.replace(/,/g, "").replace(/₹/g, "").trim();
-
-    // Allow only digits and max length of 8
     if (/^\d{0,8}$/.test(value)) {
       setRawValue(value);
     }
@@ -16,6 +19,18 @@ function ExpenseCard() {
   const formatIndianNumber = (numStr) => {
     if (!numStr) return "";
     return `₹${Number(numStr).toLocaleString("en-IN")}`;
+  };
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    setShowCalendar(false);
+    console.log("Amount:", formatIndianNumber(rawValue));
+    console.log("Date:", date?.toISOString().split("T")[0]);
+  };
+
+  const selectToday = () => {
+    const today = new Date();
+    handleDateSelect(today);
   };
 
   return (
@@ -28,6 +43,8 @@ function ExpenseCard() {
           <MdClose size={20} />
         </p>
       </div>
+
+      {/* Amount Input */}
       <div className="flex justify-center items-center mt-4">
         <input
           type="text"
@@ -37,6 +54,37 @@ function ExpenseCard() {
           className="text-4xl text-center w-full bg-transparent focus:outline-none border-none"
           placeholder="₹0"
         />
+      </div>
+
+      {/* Date Input */}
+      <div className="mt-6 text-center relative">
+        <div
+          className="border rounded py-2 px-4 cursor-pointer text-gray-600 flex items-center justify-between"
+          onClick={() => setShowCalendar(!showCalendar)}
+        >
+          <p>{selectedDate ? selectedDate.toDateString() : "Select Date"}</p>
+          <p>
+            <CiCalendarDate size={20} />
+          </p>
+        </div>
+
+        {showCalendar && (
+          <div className="absolute top-full left-0 mt-1 bg-white shadow-lg z-10 p-2">
+            <DatePicker
+              selected={selectedDate}
+              onChange={handleDateSelect}
+              inline
+            />
+            <div className="text-center mt-2">
+              <button
+                className="border border-gray-400 text-gray-500 px-3 py-1 rounded cursor-pointer w-[100%]"
+                onClick={selectToday}
+              >
+                Select Today
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
