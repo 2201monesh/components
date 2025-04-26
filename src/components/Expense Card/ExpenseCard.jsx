@@ -6,7 +6,40 @@ import { CiCalendarDate } from "react-icons/ci";
 import { RiArrowLeftDownLine, RiArrowRightUpLine } from "react-icons/ri";
 import { MdOutlineDescription } from "react-icons/md";
 import { FaChevronDown } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion"; // ✨
+import { motion, AnimatePresence } from "framer-motion";
+// import {
+//   MdHome,
+//   MdFastfood,
+//   MdOutlineElectricBolt,
+//   MdLocalCafe,
+//   MdCardTravel,
+//   MdMovie,
+//   MdVideogameAsset,
+//   MdHealthAndSafety,
+//   MdSchool,
+//   MdCardGiftcard,
+//   MdOutlineWaterDrop,
+// } from "react-icons/md";
+
+import {
+  FaHome,
+  FaShoppingCart,
+  FaBolt,
+  FaWater,
+  FaTools,
+  FaCoffee,
+  FaPlane,
+  FaUtensils,
+  FaFilm,
+  FaGamepad,
+  FaHeartbeat,
+  FaShieldAlt,
+  FaBook,
+  FaGift,
+} from "react-icons/fa";
+
+import { FaMoneyBillWave } from "react-icons/fa";
+import { BsFillCarFrontFill } from "react-icons/bs";
 
 function ExpenseCard() {
   const [rawValue, setRawValue] = useState("");
@@ -14,11 +47,11 @@ function ExpenseCard() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [amountType, setAmountType] = useState("Income");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState({ name: "", icon: null });
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [categories, setCategories] = useState({
-    HOME: ["Rent", "Groceries", "Electricity", "Water Bills", "Maintenance"],
+    HOME: ["Rent", "Groceries", "Electricity", "Maintenance"],
     LEISURE: ["Coffee", "Travel", "Dining", "Movies", "Games"],
     OTHERS: ["Health", "Insurance", "Education", "Gifts"],
   });
@@ -54,7 +87,7 @@ function ExpenseCard() {
   };
 
   const handleCategorySelect = (cat) => {
-    setCategory(cat);
+    setCategory({ name: cat, icon: categoryIcons[cat] || null });
     setShowCategoryDropdown(false);
     setSearchTerm(""); // reset search
   };
@@ -74,6 +107,25 @@ function ExpenseCard() {
     }
   };
 
+  const categoryIcons = {
+    Rent: <FaHome className="text-purple-500" />,
+    Groceries: <FaShoppingCart className="text-green-500" />,
+    Electricity: <FaBolt className="text-yellow-500" />,
+    Water: <FaWater className="text-blue-400" />,
+    Maintenance: <FaTools className="text-gray-500" />,
+
+    Coffee: <FaCoffee className="text-amber-700" />,
+    Travel: <FaPlane className="text-sky-500" />,
+    Dining: <FaUtensils className="text-rose-500" />,
+    Movies: <FaFilm className="text-indigo-500" />,
+    Games: <FaGamepad className="text-pink-500" />,
+
+    Health: <FaHeartbeat className="text-red-500" />,
+    Insurance: <FaShieldAlt className="text-blue-600" />,
+    Education: <FaBook className="text-cyan-600" />,
+    Gifts: <FaGift className="text-yellow-400" />,
+  };
+
   // Flatten all categories to filter easily
   const filteredCategories = Object.entries(categories).map(
     ([section, items]) => {
@@ -88,9 +140,7 @@ function ExpenseCard() {
     <div className="w-96 bg-white rounded px-4 py-2 relative">
       {/* Heading */}
       <div className="flex items-center">
-        <p className="w-[95%] flex justify-center text-lg font-semibold">
-          New Transaction
-        </p>
+        <p className="w-[95%] flex justify-center text-lg">New Transaction</p>
         <p className="w-[5%] cursor-pointer">
           <MdClose size={20} />
         </p>
@@ -192,7 +242,12 @@ function ExpenseCard() {
           className="w-full bg-gray-100 rounded-lg py-2 px-4 text-gray-700 flex justify-between items-center cursor-pointer"
           onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
         >
-          <span>{category || "Select Category"}</span>
+          <div className="flex items-center gap-2">
+            {category.icon && (
+              <span className="text-gray-500">{category.icon}</span>
+            )}
+            <span>{category.name || "Select Category"}</span>
+          </div>
           <FaChevronDown size={16} className="text-gray-400" />
         </div>
 
@@ -203,7 +258,7 @@ function ExpenseCard() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 mt-2 w-full bg-white rounded-lg shadow-lg p-4 z-20"
+              className="absolute top-[-180px] left-20 ml-4 w-80 bg-white rounded-lg shadow-lg p-4 z-20"
             >
               {/* Search Input */}
               <input
@@ -226,8 +281,9 @@ function ExpenseCard() {
                         <div
                           key={item}
                           onClick={() => handleCategorySelect(item)}
-                          className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700 cursor-pointer hover:bg-gray-200"
+                          className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700 cursor-pointer hover:bg-gray-200 flex items-center gap-1"
                         >
+                          <span>{categoryIcons[item]}</span> {/* Icon here */}
                           {item}
                         </div>
                       ))}
