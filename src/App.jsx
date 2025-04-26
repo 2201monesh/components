@@ -5,14 +5,15 @@ import "./App.css";
 import ComboBox from "./components/combobox/ComboBox";
 import TwitterPostBar from "./components/twitterPostBar/TwitterPostBar";
 import MeetingCards from "./components/MeetingCards/MeetingCards";
+import ExpenseCard from "./components/Expense Card/ExpenseCard";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <>
-      <MeetingCards />
-    </>
+    <div className="w-screen h-screen flex items-center justify-center">
+      <ExpenseCard />
+    </div>
   );
 }
 

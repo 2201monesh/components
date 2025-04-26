@@ -8,7 +8,7 @@ function MeetingCards() {
     <div className="w-screen h-screen flex justify-center items-center">
       <div className="w-[20%] h-[70%] bg-white rounded-sm p-4">
         <p className="mb-2">30 minute call with David</p>
-        <p className="text-xs text-gray-700 border-b pb-4">
+        <p className="text-xs text-gray-700 pb-4">
           Let's schedule a quick call and jamp on the potential between Lantern
           and your company. I will show you how we can accelerate your sales
           growth!
