@@ -7,20 +7,7 @@ import { RiArrowLeftDownLine, RiArrowRightUpLine } from "react-icons/ri";
 import { MdOutlineDescription } from "react-icons/md";
 import { FaChevronDown } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-// import {
-//   MdHome,
-//   MdFastfood,
-//   MdOutlineElectricBolt,
-//   MdLocalCafe,
-//   MdCardTravel,
-//   MdMovie,
-//   MdVideogameAsset,
-//   MdHealthAndSafety,
-//   MdSchool,
-//   MdCardGiftcard,
-//   MdOutlineWaterDrop,
-// } from "react-icons/md";
-
+import { IoMdCheckmark } from "react-icons/io";
 import {
   FaHome,
   FaShoppingCart,
@@ -50,6 +37,7 @@ function ExpenseCard() {
   const [category, setCategory] = useState({ name: "", icon: null });
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showSnackbar, setShowSnackbar] = useState(false); // State for Snackbar
   const [categories, setCategories] = useState({
     HOME: ["Rent", "Groceries", "Electricity", "Maintenance"],
     LEISURE: ["Coffee", "Travel", "Dining", "Movies", "Games"],
@@ -107,6 +95,31 @@ function ExpenseCard() {
     }
   };
 
+  const handleAddTransaction = () => {
+    const formattedDate = selectedDate
+      ? `${selectedDate.getDate().toString().padStart(2, "0")}-${(
+          selectedDate.getMonth() + 1
+        )
+          .toString()
+          .padStart(2, "0")}-${selectedDate.getFullYear()}`
+      : null;
+
+    const transaction = {
+      amount: rawValue ? Number(rawValue) : 0,
+      amountType: amountType,
+      description: description.trim(),
+      category: category.name,
+      date: formattedDate,
+    };
+
+    console.log("New Transaction:", transaction);
+    setShowSnackbar(true);
+
+    setTimeout(() => {
+      setShowSnackbar(false);
+    }, 1500);
+  };
+
   const categoryIcons = {
     Rent: <FaHome className="text-purple-500" />,
     Groceries: <FaShoppingCart className="text-green-500" />,
@@ -161,7 +174,7 @@ function ExpenseCard() {
       {/* Date Input */}
       <div className="mt-6 text-center relative">
         <div
-          className="border rounded py-2 px-4 cursor-pointer text-gray-600 flex items-center justify-between"
+          className="border rounded-lg py-2 px-4 cursor-pointer text-gray-600 flex items-center justify-between"
           onClick={() => setShowCalendar(!showCalendar)}
         >
           <div className="flex flex-col items-start">
@@ -295,6 +308,23 @@ function ExpenseCard() {
           )}
         </AnimatePresence>
       </div>
+
+      <div className="mt-6 mb-2">
+        <div
+          className="w-full bg-black text-white rounded-lg p-2 flex items-center justify-center cursor-pointer"
+          onClick={handleAddTransaction}
+        >
+          Add Transaction
+        </div>
+      </div>
+
+      {/* Snackbar Message */}
+      {showSnackbar && (
+        <div className="flex items-center fixed bottom-18 left-1/2 transform -translate-x-1/2 w-[250px] h-[40px] bg-green-50 text-green-500 p-4 rounded-lg shadow-lg text-xs border-2 border-green-500">
+          <IoMdCheckmark className="text-green-500 mr-2" size={20} />
+          <p className="text-center">Transaction added successfully</p>
+        </div>
+      )}
     </div>
   );
 }
