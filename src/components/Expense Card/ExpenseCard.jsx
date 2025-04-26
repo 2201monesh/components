@@ -8,6 +8,7 @@ function ExpenseCard() {
   const [rawValue, setRawValue] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [amountType, setAmountType] = useState(null);
 
   const handleChange = (e) => {
     const value = e.target.value.replace(/,/g, "").replace(/₹/g, "").trim();
@@ -33,8 +34,14 @@ function ExpenseCard() {
     handleDateSelect(today);
   };
 
+  const handleTypeSelect = (type) => {
+    setAmountType(type);
+    console.log("Amount Type:", type);
+  };
+
   return (
     <div className="w-96 bg-white rounded px-4 py-2">
+      {/* Heading */}
       <div className="flex items-center">
         <p className="w-[95%] flex justify-center text-lg font-semibold">
           New Transaction
@@ -62,7 +69,10 @@ function ExpenseCard() {
           className="border rounded py-2 px-4 cursor-pointer text-gray-600 flex items-center justify-between"
           onClick={() => setShowCalendar(!showCalendar)}
         >
-          <p>{selectedDate ? selectedDate.toDateString() : "Select Date"}</p>
+          <div className="flex flex-col items-start">
+            <p className="text-xs">Date</p>
+            <p>{selectedDate ? selectedDate.toDateString() : "Select Date"}</p>
+          </div>
           <p>
             <CiCalendarDate size={20} />
           </p>
@@ -85,6 +95,30 @@ function ExpenseCard() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Amount Type Toggle */}
+      <div className="mt-6 flex justify-between bg-gray-100 rounded-lg p-1">
+        <div
+          className={`w-1/2 text-center py-2 cursor-pointer font-medium transition-all ${
+            amountType === "Income"
+              ? "bg-white text-black rounded-lg shadow-sm mx-1"
+              : "text-gray-500"
+          }`}
+          onClick={() => handleTypeSelect("Income")}
+        >
+          Income
+        </div>
+        <div
+          className={`w-1/2 text-center py-2 cursor-pointer font-medium transition-all ${
+            amountType === "Expense"
+              ? "bg-white text-black rounded-lg shadow-sm mx-1"
+              : "text-gray-500"
+          }`}
+          onClick={() => handleTypeSelect("Expense")}
+        >
+          Expense
+        </div>
       </div>
     </div>
   );
