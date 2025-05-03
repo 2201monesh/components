@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import WorkflowBar from "./WorkflowBar";
+import { motion, AnimatePresence } from "framer-motion";
 
 function GeneralWorkflow() {
   const [numberOfWorkflow, setNumberOfWorkflow] = useState(1);
@@ -25,9 +26,20 @@ function GeneralWorkflow() {
         </button>
       </div>
       <div className="p-4">
-        {Array.from({ length: numberOfWorkflow }).map((_, index) => (
-          <WorkflowBar key={index} />
-        ))}
+        <AnimatePresence>
+          {Array.from({ length: numberOfWorkflow }).map((_, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              layout
+            >
+              <WorkflowBar />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
       <div className="flex items-center w-[100%] justify-center">
         <button
