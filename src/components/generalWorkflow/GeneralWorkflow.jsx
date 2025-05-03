@@ -23,6 +23,11 @@ function GeneralWorkflow() {
         <WorkflowBar />
         <WorkflowBar />
       </div>
+      <div className="flex items-center w-[100%] justify-center">
+        <button className="text-blue-500 cursor-pointer">
+          Add new workflow
+        </button>
+      </div>
     </div>
   );
 }
