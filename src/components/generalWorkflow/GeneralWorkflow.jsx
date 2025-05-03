@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import WorkflowBar from "./WorkflowBar";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 
 function GeneralWorkflow() {
-  const [numberOfWorkflow, setNumberOfWorkflow] = useState(1);
+  const [numberOfWorkflow, setNumberOfWorkflow] = useState(["Workflow 1"]);
 
   const handleBtnClick = () => {
-    setNumberOfWorkflow((prev) => prev + 1);
+    // setNumberOfWorkflow((prev) => prev + 1);
+    setNumberOfWorkflow((prev) => [...prev, `Workflow ${prev.length + 1}`]);
     console.log(numberOfWorkflow);
   };
 
@@ -26,20 +27,25 @@ function GeneralWorkflow() {
         </button>
       </div>
       <div className="p-4">
-        <AnimatePresence>
-          {Array.from({ length: numberOfWorkflow }).map((_, index) => (
-            <motion.div
+        <Reorder.Group
+          axis="y"
+          values={numberOfWorkflow}
+          onReorder={setNumberOfWorkflow}
+        >
+          {numberOfWorkflow.map((item, index) => (
+            <Reorder.Item
               key={index}
+              value={item}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
               layout
             >
-              <WorkflowBar />
-            </motion.div>
+              <WorkflowBar text={item} />
+            </Reorder.Item>
           ))}
-        </AnimatePresence>
+        </Reorder.Group>
       </div>
       <div className="flex items-center w-[100%] justify-center">
         <button
