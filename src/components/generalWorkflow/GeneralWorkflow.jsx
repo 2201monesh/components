@@ -4,15 +4,30 @@ import WorkflowBar from "./WorkflowBar";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 
 function GeneralWorkflow() {
-  const [numberOfWorkflow, setNumberOfWorkflow] = useState(["Workflow 1"]);
+  const [numberOfWorkflow, setNumberOfWorkflow] = useState([
+    { id: 1, text: "Workflow 1" },
+  ]);
 
   const handleBtnClick = () => {
-    setNumberOfWorkflow((prev) => [...prev, `Workflow ${prev.length + 1}`]);
-    console.log(numberOfWorkflow);
+    setNumberOfWorkflow((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        text: `Workflow ${prev.length + 1}`,
+      },
+    ]);
   };
 
-  const handleDelete = (itemToDelete) => {
-    setNumberOfWorkflow((prev) => prev.filter((item) => item !== itemToDelete));
+  const handleDelete = (idToDelete) => {
+    setNumberOfWorkflow((prev) =>
+      prev.filter((item) => item.id !== idToDelete)
+    );
+  };
+
+  const handleUpdateText = (id, newText) => {
+    setNumberOfWorkflow((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, text: newText } : item))
+    );
   };
 
   return (
@@ -37,7 +52,7 @@ function GeneralWorkflow() {
         >
           {numberOfWorkflow.map((item, index) => (
             <Reorder.Item
-              key={index}
+              key={item.id}
               value={item}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -45,7 +60,12 @@ function GeneralWorkflow() {
               transition={{ duration: 0.2 }}
               layout
             >
-              <WorkflowBar text={item} onDelete={() => handleDelete(item)} />
+              <WorkflowBar
+                text={item.text}
+                id={item.id}
+                onDelete={() => handleDelete(item.id)}
+                onUpdateText={handleUpdateText}
+              />
             </Reorder.Item>
           ))}
         </Reorder.Group>
