@@ -11,6 +11,10 @@ function GeneralWorkflow() {
     console.log(numberOfWorkflow);
   };
 
+  const handleDelete = (itemToDelete) => {
+    setNumberOfWorkflow((prev) => prev.filter((item) => item !== itemToDelete));
+  };
+
   return (
     <div className="w-[30%] h-[70%] bg-white rounded-lg flex flex-col">
       <div className="flex items-center justify-between border-b border-gray-200 p-4">
@@ -41,7 +45,7 @@ function GeneralWorkflow() {
               transition={{ duration: 0.2 }}
               layout
             >
-              <WorkflowBar text={item} />
+              <WorkflowBar text={item} onDelete={() => handleDelete(item)} />
             </Reorder.Item>
           ))}
         </Reorder.Group>
