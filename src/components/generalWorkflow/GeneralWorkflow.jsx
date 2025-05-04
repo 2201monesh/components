@@ -7,7 +7,6 @@ function GeneralWorkflow() {
   const [numberOfWorkflow, setNumberOfWorkflow] = useState(["Workflow 1"]);
 
   const handleBtnClick = () => {
-    // setNumberOfWorkflow((prev) => prev + 1);
     setNumberOfWorkflow((prev) => [...prev, `Workflow ${prev.length + 1}`]);
     console.log(numberOfWorkflow);
   };
