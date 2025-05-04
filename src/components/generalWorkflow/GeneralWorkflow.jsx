@@ -29,7 +29,7 @@ function GeneralWorkflow() {
           <IoIosArrowDown />
         </button>
       </div>
-      <div className="p-4">
+      <div className="p-4 max-h-[70%] overflow-y-scroll">
         <Reorder.Group
           axis="y"
           values={numberOfWorkflow}
@@ -50,7 +50,7 @@ function GeneralWorkflow() {
           ))}
         </Reorder.Group>
       </div>
-      <div className="flex items-center w-[100%] justify-center">
+      <div className="flex items-center w-[100%] justify-center mt-2">
         <button
           className="text-blue-500 cursor-pointer"
           onClick={handleBtnClick}
