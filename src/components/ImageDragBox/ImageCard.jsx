@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 function ImageCard() {
   const cards = [
@@ -40,7 +41,10 @@ function ImageCard() {
     <div className="w-[40%] h-[40%] flex flex-wrap gap-3">
       {cards.map((card, index) => {
         return (
-          <div
+          <motion.div
+            drag
+            dragElastic={0.7}
+            whileTap={{ scale: 0.95 }}
             key={index}
             className="rounded-2xl bg-white shadow-2xl w-[120px] h-[110px] flex items-center justify-center"
           >
@@ -48,7 +52,7 @@ function ImageCard() {
               className="w-[110px] h-[100px] cursor-pointer rounded-2xl m-1.5 bg-cover bg-center"
               style={{ backgroundImage: `url(${card.imgUrl})` }}
             ></div>
-          </div>
+          </motion.div>
         );
       })}
     </div>
