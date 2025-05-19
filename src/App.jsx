@@ -10,13 +10,14 @@ import TagBox from "./components/TagBox/TagBox";
 import GeneralWorkflow from "./components/generalWorkflow/GeneralWorkflow";
 import ImageUploader from "./components/ImageUploader/ImageUploader";
 import ImageDragBox from "./components/ImageDragBox/ImageDragBox";
+import FileComponents from "./components/fileComponents/FileComponents";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <div className="w-screen h-screen flex items-center justify-center">
-      <ImageDragBox />
+      <FileComponents />
     </div>
   );
 }
