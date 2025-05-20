@@ -4,7 +4,7 @@ import { LuFolderOpen } from "react-icons/lu";
 import { CiFolderOn } from "react-icons/ci";
 import { IoIosArrowForward } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 function TreeNode({ node, level = 0, onDragStart, onDrop }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,8 +39,6 @@ function TreeNode({ node, level = 0, onDragStart, onDrop }) {
         {...commonProps}
         className="flex items-center gap-2 mb-1 text-gray-800 hover:bg-gray-100 rounded-md py-1 px-2"
         style={{ paddingLeft }}
-        // whileHover={{ scale: 1.01 }}
-        // whileTap={{ scale: 0.98 }}
       >
         <p className="text-md">{node.name}</p>
       </motion.div>
@@ -54,8 +52,6 @@ function TreeNode({ node, level = 0, onDragStart, onDrop }) {
         className="flex items-center hover:bg-gray-100 rounded-md py-1 px-2"
         style={{ paddingLeft }}
         onClick={() => setIsOpen((prev) => !prev)}
-        // whileHover={{ scale: 1.01 }}
-        // whileTap={{ scale: 0.98 }}
       >
         <span className="mr-1">
           {isOpen ? (
@@ -73,13 +69,20 @@ function TreeNode({ node, level = 0, onDragStart, onDrop }) {
         </span>
         <p>{node.name}</p>
       </motion.div>
-      {isOpen && (
-        <div>
-          {node.children.map((child, index) => (
-            <TreeNode key={index} node={child} level={level + 1} />
-          ))}
-        </div>
-      )}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+          >
+            {node.children.map((child, index) => (
+              <TreeNode key={index} node={child} level={level + 1} />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
