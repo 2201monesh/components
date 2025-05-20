@@ -1,34 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Filter } from "lucide-react";
 import TreeNode from "./TreeNode";
 
 function FileComponents() {
-  //   const fileStructure = [
-  //     {
-  //       type: "folder",
-  //       name: "src",
-  //       children: [
-  //         {
-  //           type: "file",
-  //           name: "App.jsx",
-  //         },
-  //         {
-  //           type: "folder",
-  //           name: "components",
-  //           children: [
-  //             { type: "file", name: "Header.jsx" },
-  //             { type: "file", name: "Sidebar.jsx" },
-  //           ],
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       type: "file",
-  //       name: "package.json",
-  //     },
-  //   ];
-
-  const fileStructure = [
+  const [fileStructure, setFileStructure] = useState([
     {
       type: "folder",
       name: "src",
@@ -96,6 +71,20 @@ function FileComponents() {
       ],
     },
     {
+      type: "folder",
+      name: "build",
+      children: [
+        {
+          type: "file",
+          name: "index.html",
+        },
+        {
+          type: "file",
+          name: "favicon.ico",
+        },
+      ],
+    },
+    {
       type: "file",
       name: "package.json",
     },
@@ -103,12 +92,58 @@ function FileComponents() {
       type: "file",
       name: "README.md",
     },
-  ];
+  ]);
+
+  const [draggedNode, setDraggedNode] = useState(null);
+
+  const handleDrop = (targetNode) => {
+    if (!draggedNode || targetNode.type !== "folder") return;
+
+    const removeNode = (nodes, targetName) => {
+      return nodes
+        .map((node) => {
+          if (node === targetName) return null;
+          if (node.type === "folder") {
+            return {
+              ...node,
+              children: removeNode(node.children, targetName),
+            };
+          }
+          return node;
+        })
+        .filter(Boolean);
+    };
+
+    const updatedStructure = removeNode(fileStructure, draggedNode);
+
+    const insertNode = (nodes, targetName, nodeToInsert) => {
+      return nodes.map((node) => {
+        if (node.name === targetName.name && node.type === "folder") {
+          return {
+            ...node,
+            children: [...(node.children || []), nodeToInsert],
+          };
+        }
+        if (node.type === "folder") {
+          return {
+            ...node,
+            children: insertNode(node.children, targetName, nodeToInsert),
+          };
+        }
+        return node;
+      });
+    };
+
+    const newStructure = insertNode(updatedStructure, targetNode, draggedNode);
+
+    setFileStructure(newStructure);
+    setDraggedNode(null);
+  };
 
   return (
     <div className="w-[30%] h-[70%] border flex items-center flex-col p-6">
-      <div className="w-[70%] flex flex-col h-[100%] overflow-y-scroll">
-        <div className="w-[100%] h-8 border rounded-md px-3 py-2 outline-none border-gray-400 flex items-center mb-4">
+      <div className="w-[70%] flex flex-col h-[100%]">
+        <div className="w-full h-8 border rounded-md px-3 py-2 outline-none border-gray-400 flex items-center mb-4">
           <Filter className="text-gray-500 mr-2" size={18} />
           <input
             type="text"
@@ -116,9 +151,15 @@ function FileComponents() {
             placeholder="filter items..."
           />
         </div>
-        <div className="cursor-pointer">
+        <div className="cursor-pointer overflow-y-scroll">
           {fileStructure.map((item, index) => (
-            <TreeNode key={index} node={item} />
+            <TreeNode
+              key={index}
+              node={item}
+              level={0}
+              onDragStart={() => setDraggedNode(item)}
+              onDrop={(target) => handleDrop(target)}
+            />
           ))}
         </div>
       </div>
